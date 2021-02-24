@@ -155,6 +155,9 @@ public class ImageProcessor extends Handler {
         sd.widthWithRatio = Double.valueOf(sd.originalSize.height / ratio).intValue();
 
         Mat doc;
+        doc = new Mat(inputRgba.size(), CvType.CV_8UC4);
+        inputRgba.copyTo(doc);
+        /*
         if (quad != null) {
 
             sd.originalPoints = new Point[4];
@@ -172,7 +175,7 @@ public class ImageProcessor extends Handler {
         } else {
             doc = new Mat(inputRgba.size(), CvType.CV_8UC4);
             inputRgba.copyTo(doc);
-        }
+        }*/
         enhanceDocument(doc);
         return sd.setProcessed(doc);
     }
