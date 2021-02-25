@@ -44,6 +44,7 @@ import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -414,7 +415,15 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
 
     private void refreshCamera() {
         final boolean torchEnabled = this.enableTorch;
-
+        if (mCamera == null) {
+            try {
+                int cameraId = findBestCamera();
+                mCamera = Camera.open(cameraId);
+            } catch (RuntimeException e) {
+                System.err.println(e);
+                return;
+            }
+        }
         try {
             mCamera.stopPreview();
         }
@@ -546,6 +555,7 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
 
             try {
                 if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_AUTOFOCUS)) {
+                    if (mCamera == null) { return; }
                     mCamera.autoFocus(new Camera.AutoFocusCallback() {
                         @Override
                         public void onAutoFocus(boolean success, Camera camera) {
@@ -567,6 +577,15 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
     }
 
     private void takePicture() {
+        if (mCamera == null) {
+            try {
+                int cameraId = findBestCamera();
+                mCamera = Camera.open(cameraId);
+            } catch (RuntimeException e) {
+                System.err.println(e);
+                return;
+            }
+        }
         mCamera.takePicture(null, null, pCallback);
         blinkScreen();
         blinkScreenAndShutterSound();
@@ -630,6 +649,7 @@ public class OpenNoteCameraView extends JavaCameraView implements PictureCallbac
     }
 
     private List<Size> getResolutionList() {
+        if (mCamera == null) { return new ArrayList<>(); }
         return mCamera.getParameters().getSupportedPreviewSizes();
     }
 
